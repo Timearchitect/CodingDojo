@@ -80,7 +80,7 @@ class powerup {
       break;
 
     case 6:
-      speedStat += 0.09;
+      speedStat += 0.1;
       break;
 
     case 7:
@@ -124,7 +124,7 @@ class powerup {
       break;
 
     case 14:
-      jumpStat += 2;
+      jumpStat += 3;
       break;
 
     case 15:
