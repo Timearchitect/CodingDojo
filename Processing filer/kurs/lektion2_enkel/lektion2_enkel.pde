@@ -1,4 +1,3 @@
-
 final int FPS=60;
 //static long currentMillis;
 
@@ -12,7 +11,6 @@ float zoom=1;
 
 void setup() {
   playerList.add(player1);
-  surface.setSize(1000, 800);
   HALF_WIDTH=int(width*0.5);
   HALF_HEIGHT=int(height*0.5);
   frameRate(FPS);
