@@ -1,7 +1,7 @@
 final int FPS=60;
 //static long currentMillis;
 
-boolean followCam=false;
+boolean followCam=true;
 int HALF_HEIGHT, HALF_WIDTH;
 Player player1 = new Player(0, 0, 0, 0);
 //ArrayList<Player> playerList= new ArrayList<Player>();
