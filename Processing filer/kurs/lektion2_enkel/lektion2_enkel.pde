@@ -4,19 +4,18 @@ final int FPS=60;
 boolean followCam=false;
 int HALF_HEIGHT, HALF_WIDTH;
 Player player1 = new Player(0, 0, 0, 0);
-ArrayList<Player> playerList= new ArrayList<Player>();
+//ArrayList<Player> playerList= new ArrayList<Player>();
 ArrayList<Projectile> projectileList= new ArrayList<Projectile>();
 float camPosX, camPosY, mousePosX, mousePosY;
 float zoom=1;
 
 void setup() {
-  playerList.add(player1);
+ // playerList.add(player1);
   HALF_WIDTH=int(width*0.5);
   HALF_HEIGHT=int(height*0.5);
   frameRate(FPS);
   size(800, 500, P2D);
   //fullScreen();
-  noSmooth(); 
   rectMode(CENTER);
   strokeCap(SQUARE);
   camPosX=HALF_WIDTH;
@@ -40,11 +39,15 @@ void draw() {
   mousePosX=(mouseX-camPosX)/zoom;
   mousePosY=(mouseY-camPosY)/zoom;
 
-  for (Player p : playerList) {
+  /*for (Player p : playerList) {
     p.hold();
     p.update();
     p.draw();
-  }
+  }*/
+  
+  player1.hold();
+  player1.update();
+  player1.draw();
   for (Projectile p : projectileList) {
     p.update();
     p.draw();
@@ -53,22 +56,25 @@ void draw() {
 }
 
 void keyPressed() {
-  for (Player p : playerList) 
-    p.pressed(); 
+ // for (Player p : playerList) 
+  //  p.pressed(); 
+  player1.pressed(); 
 }
 void keyReleased() {
-  for (Player p : playerList) 
-    p.released();
+  //for (Player p : playerList) 
+   // p.released();
+   player1.released();
 }
 
 void mousePressed() {
-  for (Player p : playerList) 
-    p.mousePressed();
-  
+  //for (Player p : playerList) 
+  //  p.mousePressed();
+  player1.mousePressed();
 }
 void mouseReleased() {
-  for (Player p : playerList) 
-    p.mouseReleased();
+ // for (Player p : playerList) 
+ //   p.mouseReleased();
+ player1.mouseReleased();
   
 }
 void mouseWheel(MouseEvent event) {
