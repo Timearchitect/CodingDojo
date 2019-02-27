@@ -3,9 +3,9 @@ import java.awt.event.FocusEvent;
 import javax.swing.SwingUtilities;
 import javax.swing.JFrame;
 
-/*import processing.net.*;
+import processing.net.*;
 Server s;
-Client c;*/
+Client c;
 /*
 boolean flagga = true;
  int siffra = 5;
@@ -25,13 +25,15 @@ ArrayList<Projectile> projectileList= new ArrayList<Projectile>();
 long lastMillis, frameDelta;
 final int FPS=60;
 final float FPS_FACTOR=16;
-PVector camPos=new PVector(0, 0), mousePos=new PVector(0, 0);
-float zoom=1, timeScale;
+PVector camPos=new PVector(0, 0), targetCamPos=new PVector(0, 0), mousePos=new PVector(0, 0);
+float zoom=1, timeScale, zoomTarget=1;
 Player player1 = new Player(Vector(0, 0), Vector(0, 0), Vector(0, 0));
 boolean followCam=true;
 static long currentMillis;
+
 void settings() {
 }
+
 void setup() {
 
   /*
@@ -66,7 +68,7 @@ void setup() {
    java.awt.EventQueue.invokeLater(new Runnable() {
    @Override
    public void run() {
-   frame.toFront();
+   //frame.toFront();
    frame.repaint();
    }
    }
@@ -74,23 +76,24 @@ void setup() {
    frame.setAlwaysOnTop(true);
    s = new Server(this, 12345); // Start a simple server on a port
    */
-
-  gameObjectList.add(
-    player1
-    );
+  surface.setCursor(1);
+  gameObjectList.add(player1);
+  s = new Server(this, 12345); // Start a simple server on a port
   surface.setSize(1000, 800);
   HALF_WIDTH=int(width*0.5);
   HALF_HEIGHT=int(height*0.5);
   frameRate(FPS);
-  size(800, 500, P2D);
+  // size(800, 500, P2D);
   //fullScreen();
   noSmooth(); 
   rectMode(CENTER);
   strokeCap(SQUARE);
   camPos=Vector(HALF_WIDTH, HALF_HEIGHT);
-  enemyList.add(
-    new Enemy(Vector(-50, 100), Vector(0, 0), Vector(0, 0))
-    );
+  for (int i =0; i<7; i++) {
+    enemyList.add(
+      new Enemy(Vector(random(width), random(height)), Vector(0, 0), Vector(0, 0))
+      );
+  }
 }
 
 void draw() {
@@ -99,25 +102,25 @@ void draw() {
   lastMillis=currentMillis;
   timeScale=frameDelta/FPS_FACTOR;
   //println(frameDelta+" "+timeScale);
-  if (followCam)camPos=Vector((-player1.position.x)*zoom+HALF_WIDTH, (-player1.position.y)*zoom+HALF_HEIGHT);
+  if (followCam)targetCamPos=Vector((-player1.position.x)*zoom+HALF_WIDTH, (-player1.position.y)*zoom+HALF_HEIGHT);
 
-/*
+  /*
   for (Projectile p : projectileList) 
    if (p.dead) {
    projectileList.remove(p); 
    break;
    }
    
-  for (int i =projectileList.size()-1; i>=0; i--) {    
-    // Do something    
-    if (projectileList.get(i).dead) projectileList.remove(projectileList.get(i));
-  } */
-  for (int i = projectileList.size(); i!=0;) {    
+   for (int i =projectileList.size()-1; i>=0; i--) {    
+   // Do something    
+   if (projectileList.get(i).dead) projectileList.remove(projectileList.get(i));
+   } */
+  for (int i = projectileList.size(); i!=0; ) {    
     // Do something    
     if (projectileList.get(--i).dead) projectileList.remove(i);
   }
 
-    for (int i =enemyList.size()-1; i>=0; i--) {    
+  for (int i =enemyList.size()-1; i>=0; i--) {    
     // Do something    
     if (enemyList.get(i).dead) enemyList.remove(enemyList.get(i));
   } 
@@ -125,6 +128,7 @@ void draw() {
 
   translate(camPos.x, camPos.y);
   background(255, 255, 255);
+  zoom+=(zoomTarget-zoom)*.1;
   scale(zoom);
   rect(0, 0, width, height);
   mousePos=Vector(mouseX, mouseY).sub(camPos).div(zoom);
@@ -142,14 +146,11 @@ void draw() {
   for (Enemy e : enemyList) {
     e.update();
     e.draw();
-    for (Projectile p : projectileList) {
-      e.hit(p.position);
-    }
+    for (Projectile p : projectileList) if (e.hit(p.position))p.dead=true;
   }
-  
-  popMatrix();
 
-  
+  popMatrix();
+  camPos = targetCamPos.copy().add(camPos).mult(0.5);
 }
 
 
@@ -179,7 +180,7 @@ void mouseWheel(MouseEvent event) {
   // brushSize+=event.getCount();
   // if (brushSize<0)brushSize=0;
   //  strokeWeight(brushSize);
-  zoom+=(event.getCount()*zoom*0.1);
+  zoomTarget+=(event.getCount()*zoomTarget*0.1);
 }
 
 static public PVector Vector(float x, float y) {
@@ -187,8 +188,35 @@ static public PVector Vector(float x, float y) {
 } 
 /*
 void clientEvent(Client someClient) {
-  //print("Server Says:  ");
-  // dataIn = myClient.read();
-  // println(dataIn);
-  //background(dataIn);
-}*/
+ //print("Server Says:  ");
+ // dataIn = myClient.read();
+ // println(dataIn);
+ //background(dataIn);
+ }*/
+
+
+
+void serverUpdate() 
+{
+  if (mousePressed == true) {
+    // Draw our line
+    stroke(255);
+    line(pmouseX, pmouseY, mouseX, mouseY);
+    // Send mouse coords to other person
+    s.write(pmouseX + " " + pmouseY + " " + mouseX + " " + mouseY + "\n");
+  }
+}
+String input;
+int data[];
+void clientInput() {
+  // Receive data from client
+  c = s.available();
+  if (c != null) {
+    input = c.readString();
+    input = input.substring(0, input.indexOf("\n")); // Only up to the newline
+    data = int(split(input, ' ')); // Split values into an array
+    // Draw line using received coords
+    stroke(0);
+    line(data[0], data[1], data[2], data[3]);
+  }
+}

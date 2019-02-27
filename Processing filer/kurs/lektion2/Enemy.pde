@@ -8,7 +8,7 @@ class Enemy extends GameObject {
   boolean invis, invisAlt;
   int hp=10;
   Enemy (PVector pos, PVector vel, PVector accel) {
-    super(pos, vel, accel);
+    super(pos.copy(), vel.copy(), accel.copy());
     //acceleration=new PVector(); 
     // velocity=new PVector(); 
     //position=new PVector();
@@ -43,7 +43,7 @@ class Enemy extends GameObject {
     bulletSpawnPoint.add(position.copy());
   }
 
-  void hit(PVector coord) {
+  boolean hit(PVector coord) {
     if (!invis && dist(coord.x, coord.y, position.x, position.y) < size) { 
       invis=true;
       invisTime=currentMillis;
@@ -52,6 +52,8 @@ class Enemy extends GameObject {
       if (hp<=0) {
         dead=true;
       }
+      return true;
     }
+    return false;
   }
 }
